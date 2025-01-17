@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:deals_dray/data/exclusive_data.dart';
 import 'package:deals_dray/data/slider_data.dart';
