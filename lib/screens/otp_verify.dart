@@ -5,8 +5,7 @@ import 'package:deals_dray/services/otp_data_post.dart';
 import 'package:deals_dray/services/splash_screen_data_post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
-import 'package:otp_text_field/otp_text_field.dart';
-import 'package:otp_text_field/style.dart';
+import 'package:otp_text_field_v2/otp_field_v2.dart';
 
 class OtpVerify extends StatefulWidget {
   final String data;
@@ -50,16 +49,14 @@ class _OtpVerifyState extends State<OtpVerify> {
               ],
             ),
             SizedBox(height: 30),
-            OTPTextField(
+            OTPTextFieldV2(
               length: 4,
               width: MediaQuery.of(context).size.width,
-              fieldWidth: 60,
-              style: TextStyle(
-                fontSize: 17,
-                color: Colors.black,
-              ),
               textFieldAlignment: MainAxisAlignment.spaceAround,
+              fieldWidth: 55,
               fieldStyle: FieldStyle.box,
+              outlineBorderRadius: 15,
+              style: TextStyle(fontSize: 17),
               onCompleted: (pin) {
                 verifyOtp(
                   OtpVerifyModule(

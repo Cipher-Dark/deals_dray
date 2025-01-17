@@ -21,6 +21,7 @@ Future<void> sendLoginData(LoginScreenMode deviceData) async {
     );
 
     if (response.statusCode == 200) {
+      log(response.body);
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       if (responseData["status"] == 1) {
         userId = responseData["data"]['userId'];

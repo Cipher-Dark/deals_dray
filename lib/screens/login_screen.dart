@@ -14,17 +14,40 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isPhone = true;
-  bool _isEmpty = true;
   int _currentIndex = 0;
   TextEditingController textEditingController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  void navigateToOtp() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+          child: CircularProgressIndicator(
+        color: Colors.white,
+      )),
+    );
+
+    await Future.delayed(Duration(seconds: 2));
+    Navigator.pop(context);
+
+    if (getIsOTP) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OtpVerify(
+            data: textEditingController.text,
+            isPhone: _isPhone,
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -94,50 +117,51 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 SizedBox(height: 10),
-                TextField(
-                  controller: textEditingController,
-                  keyboardType: _isPhone ? TextInputType.numberWithOptions() : null,
-                  onChanged: (value) {
-                    if (_isPhone ? (value.length == 10) : (RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value))) {
-                      setState(() {
-                        _isEmpty = false;
-                      });
-                    }
-                  },
-                  decoration: InputDecoration(
-                    labelText: _isPhone ? "Phone" : "Email",
-                    labelStyle: TextStyle(color: Colors.grey[600]),
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: textEditingController,
+                    keyboardType: _isPhone ? TextInputType.numberWithOptions(decimal: false) : TextInputType.emailAddress,
+                    validator: (value) {
+                      if (_isPhone) {
+                        if (value == null || value.isEmpty) {
+                          return "This can't be empty";
+                        } else if (value.length != 10) {
+                          return "Enter a valid phone number";
+                        }
+                      } else {
+                        if (value == null || value.isEmpty) {
+                          return "This can't be empty";
+                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return "Enter a valid email";
+                        }
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: _isPhone ? "Phone" : "Email",
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
-                    _isEmpty
-                        ? ScaffoldMessenger(
-                            child: SnackBar(
-                              content: Text("Please enter correct in format."),
-                            ),
-                          )
-                        : sendLoginData(
-                            LoginScreenMode(
-                              deviceID: getDeviceID,
-                              mobileNumber: textEditingController.text,
-                            ),
-                          );
-                    if (getIsOTP) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OtpVerify(data: textEditingController.text, isPhone: _isPhone),
+                    if (_formKey.currentState!.validate()) {
+                      sendLoginData(
+                        LoginScreenMode(
+                          deviceID: getDeviceID,
+                          mobileNumber: textEditingController.text,
                         ),
                       );
+                      navigateToOtp();
                     }
                   },
                   child: Container(
                     height: 60,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: _isEmpty ? Colors.red[300] : Colors.red,
+                      color: Colors.red[400],
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(
